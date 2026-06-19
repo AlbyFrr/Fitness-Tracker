@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fitness Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="min-h-screen bg-slate-50 text-slate-950">
+    <main class="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+      <header class="flex flex-col gap-3 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="text-sm font-medium uppercase tracking-[0.18em] text-emerald-600">Daily fitness log</p>
+          <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Fitness Tracker</h1>
+        </div>
+        <button
+          id="clearAllBtn"
+          class="inline-flex h-10 items-center justify-center rounded-md border border-slate-300 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition hover:border-red-300 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-200"
+          type="button"
+        >
+          Clear history
+        </button>
+      </header>
+
+      <section class="grid gap-6 lg:grid-cols-[380px_1fr]">
+        <form id="activityForm" class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm" autocomplete="off">
+          <div class="mb-5">
+            <h2 class="text-lg font-semibold text-slate-950">Log activity</h2>
+            <p class="mt-1 text-sm text-slate-500">Add workouts, steps, and calories for any day.</p>
+          </div>
+
+          <div class="grid gap-4">
+            <label class="grid gap-2 text-sm font-medium text-slate-700">
+              Date
+              <input
+                id="activityDate"
+                class="h-11 rounded-md border border-slate-300 bg-white px-3 text-slate-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                type="date"
+                required
+              />
+            </label>
+
+            <label class="grid gap-2 text-sm font-medium text-slate-700">
+              Exercise type
+              <select
+                id="exerciseType"
+                class="h-11 rounded-md border border-slate-300 bg-white px-3 text-slate-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                required
+              >
+                <option value="Running">Running</option>
+                <option value="Cycling">Cycling</option>
+                <option value="Weightlifting">Weightlifting</option>
+                <option value="Walking">Walking</option>
+              </select>
+            </label>
+
+            <label class="grid gap-2 text-sm font-medium text-slate-700">
+              Duration
+              <div class="relative">
+                <input
+                  id="duration"
+                  class="h-11 w-full rounded-md border border-slate-300 bg-white px-3 pr-16 text-slate-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                  type="number"
+                  min="1"
+                  step="1"
+                  placeholder="45"
+                  required
+                />
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">min</span>
+              </div>
+            </label>
+
+            <label class="grid gap-2 text-sm font-medium text-slate-700">
+              Calories burned
+              <input
+                id="calories"
+                class="h-11 rounded-md border border-slate-300 bg-white px-3 text-slate-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="320"
+                required
+              />
+            </label>
+
+            <label class="grid gap-2 text-sm font-medium text-slate-700">
+              Daily steps
+              <input
+                id="steps"
+                class="h-11 rounded-md border border-slate-300 bg-white px-3 text-slate-950 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="8500"
+                required
+              />
+            </label>
+          </div>
+
+          <button
+            class="mt-5 inline-flex h-11 w-full items-center justify-center rounded-md bg-emerald-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+            type="submit"
+          >
+            Save activity
+          </button>
+        </form>
+
+        <div class="grid gap-6">
+          <section class="grid gap-4 sm:grid-cols-3">
+            <article class="stat-card">
+              <span class="stat-label">Total steps</span>
+              <strong id="totalSteps" class="stat-value">0</strong>
+              <div class="progress-track"><span id="stepsProgress" class="progress-fill bg-emerald-500"></span></div>
+              <span class="stat-goal">Goal: 10,000 today</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Workout time</span>
+              <strong id="totalDuration" class="stat-value">0 min</strong>
+              <div class="progress-track"><span id="durationProgress" class="progress-fill bg-sky-500"></span></div>
+              <span class="stat-goal">Goal: 60 min today</span>
+            </article>
+            <article class="stat-card">
+              <span class="stat-label">Calories burned</span>
+              <strong id="totalCalories" class="stat-value">0</strong>
+              <div class="progress-track"><span id="caloriesProgress" class="progress-fill bg-amber-500"></span></div>
+              <span class="stat-goal">Goal: 500 today</span>
+            </article>
+          </section>
+
+          <section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 class="text-lg font-semibold text-slate-950">Weekly progress</h2>
+                <p class="text-sm text-slate-500">Steps, workout minutes, and calories for the last 7 days.</p>
+              </div>
+            </div>
+            <div class="chart-shell">
+              <canvas id="progressChart" aria-label="Weekly fitness progress chart"></canvas>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-200 p-5">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-950">Activity history</h2>
+            <p id="historyCount" class="mt-1 text-sm text-slate-500">No records yet</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+            <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+              <tr>
+                <th class="px-5 py-3 font-semibold">Date</th>
+                <th class="px-5 py-3 font-semibold">Exercise</th>
+                <th class="px-5 py-3 font-semibold">Duration</th>
+                <th class="px-5 py-3 font-semibold">Calories</th>
+                <th class="px-5 py-3 font-semibold">Steps</th>
+                <th class="px-5 py-3 text-right font-semibold">Action</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+
+        <div id="emptyState" class="hidden px-5 py-10 text-center">
+          <p class="text-sm font-medium text-slate-700">Your activity log is empty.</p>
+          <p class="mt-1 text-sm text-slate-500">Add your first activity to populate the dashboard.</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
